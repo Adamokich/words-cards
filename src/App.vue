@@ -1,9 +1,9 @@
 <script setup>
-    const currentDate = new Date();
+    const today = new Date();
 </script>
 
 <template>
-    <h1>{{ currentDate}}</h1>
+    <h1>{{ today }}</h1>
 </template>
 
 <style scoped>
