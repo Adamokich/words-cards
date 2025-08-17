@@ -2,6 +2,7 @@
   --color-primary: #008BFE;
   --color-primary-inverted: #006FCB;
   --color-primary-accent: #CCE8FF;
+  --color-bg-main: #F0F4F8;
   --color-light: #FFFFFF;
   --color-dark: #222222;
 
@@ -19,10 +20,9 @@ body {
 
     
     color: var(--color-dark);
-    background-color: var(--color-light);
+    background-color: var(--color-bg-main);
     font-family: var(--font);
     min-height: 100vh;
+    padding: 37px 65px 65px 65px;
     display: grid;
-    place-items: center;
-
 }
