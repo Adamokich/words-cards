@@ -3,7 +3,7 @@
     import IconSuccesSmall from '../icons/IconSuccesSmall.vue';
     import IconFail from '../icons/IconFail.vue';
     import IconSucces from '../icons/IconSucces.vue';
-    import { computed, isRef } from 'vue';
+    import { computed, inject } from 'vue';
 
     const emit = defineEmits(['flip', 'answer']);
     const {word, translation, state, status} = defineProps({
