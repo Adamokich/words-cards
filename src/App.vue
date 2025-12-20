@@ -1,9 +1,9 @@
 <script setup>
-    const currentDate = new Date();
+    import Button from './components/Button.vue';
 </script>
 
 <template>
-    <h1>{{ currentDate }}</h1>
+    <Button/>
 </template>
 
 <style scoped>
