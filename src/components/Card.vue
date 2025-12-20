@@ -6,6 +6,7 @@
     import { computed } from 'vue';
 
     const emit = defineEmits(['flip', 'answer']);
+    const arr = [0, 1];
 
     const {word, translation, state, status} = defineProps({
         word: String,
@@ -16,17 +17,17 @@
 
     const classState = computed(() => {
         return {
-            turnClass: state === 'closed' ? 'card-turn' : 'card-turn none',
-            iconsClass: state === 'opened' && status === 'pending' ? 'answer-icons' : 'answer-icons none',
-            answerOptionClass: status === 'pending' && state === 'opened' ? 'stateAnswer none' : 'stateAnswer',
-            completedClass: status === 'pending' ? 'completed none' : 'completed'
+            turnClass: state === 'closed',
+            iconsClass: state === 'opened' && status === 'pending',
+            answerOptionClass: status !== 'pending' && state === 'opened',
+            completedClass: state === 'opened' && status !== 'pending'
         }
     })
 
     const answerState = computed(() => {
         return {
-            fail: status === 'fail' ? 'fail' : 'fail none',
-            succes: status === 'succes' ? 'succes' : 'succes none'
+            fail: status === 'fail',
+            succes: status === 'succes'
         }
     })
 
@@ -45,15 +46,15 @@
 </script>
 
 <template>
-    <div class="card">
+    <div class="card" v-for="(item, index) in arr" :key="index">
         <div class="card-line"></div>
         <div class="card-line"></div>
 
-        <div :class="classState.answerOptionClass">
-            <div :class="answerState.fail">
+        <div class="stateAnswer" v-show="classState.answerOptionClass">
+            <div class="fail" v-show="answerState.fail">
                 <IconFail/>
             </div>
-            <div :class="answerState.succes">
+            <div class="succes" v-show="answerState.succes">
                 <IconSucces/>
             </div>
         </div>
@@ -62,9 +63,11 @@
             <div class="card-number">01</div>
             <div class="card-name">{{ word }}</div>
 
-            <div :class="classState.turnClass" @click="handleFlip">Перевернуть</div>
+            <div class="card-turn" 
+            @click="handleFlip"
+            v-show="classState.turnClass">Перевернуть</div>
 
-            <div :class="classState.iconsClass">
+            <div class="answer-icons" v-show="classState.iconsClass">
                 <div class="icon-fail" @click="handleWrong">
                     <IconFailSmall/>
                 </div>
@@ -73,7 +76,7 @@
                 </div>
             </div>
 
-            <div :class="classState.completedClass">Завершено</div>
+            <div class="completed" v-show="classState.completedClass">Завершено</div>
         </div>
         
     </div>
