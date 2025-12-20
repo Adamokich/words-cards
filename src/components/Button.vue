@@ -17,6 +17,8 @@
         max-width: 100%;
         width: 335px;
         min-height: 68px;
+        display: grid;
+        justify-self: center;
     }
 
     .button:hover {
