@@ -3,58 +3,46 @@
     import IconSuccesSmall from '../icons/IconSuccesSmall.vue';
     import IconFail from '../icons/IconFail.vue';
     import IconSucces from '../icons/IconSucces.vue';
-    import { computed } from 'vue';
+    import { computed, isRef } from 'vue';
 
     const emit = defineEmits(['flip', 'answer']);
-    const arr = [0, 1];
-
     const {word, translation, state, status} = defineProps({
         word: String,
         translation: String,
         state: String,
         status: String
-    })
-
+    });
+    
     const classState = computed(() => {
-        return {
+        return  {
             turnClass: state === 'closed',
             iconsClass: state === 'opened' && status === 'pending',
             answerOptionClass: status !== 'pending' && state === 'opened',
-            completedClass: state === 'opened' && status !== 'pending'
-        }
-    })
-
-    const answerState = computed(() => {
-        return {
+            completedClass: state === 'opened' && status !== 'pending',
             fail: status === 'fail',
             succes: status === 'succes'
         }
-    })
+    });
 
-    function handleFlip() {
-        emit('flip');
+    function handleFlip(word) {
+        emit('flip', word)
     }
 
-    function handleCorrect() {
-        emit('answer', 'succes')
+    function handleAnswer(word, answer) {
+        emit('answer', word, answer)
     }
-
-    function handleWrong() {
-        emit('answer', 'fail')
-    }
-
 </script>
 
 <template>
-    <div class="card" v-for="(item, index) in arr" :key="index">
+    <div class="card">
         <div class="card-line"></div>
         <div class="card-line"></div>
 
         <div class="stateAnswer" v-show="classState.answerOptionClass">
-            <div class="fail" v-show="answerState.fail">
+            <div class="fail" v-show="classState.fail">
                 <IconFail/>
             </div>
-            <div class="succes" v-show="answerState.succes">
+            <div class="succes" v-show="classState.succes">
                 <IconSucces/>
             </div>
         </div>
@@ -64,21 +52,20 @@
             <div class="card-name">{{ word }}</div>
 
             <div class="card-turn" 
-            @click="handleFlip"
+            @click="handleFlip(word)"
             v-show="classState.turnClass">Перевернуть</div>
 
             <div class="answer-icons" v-show="classState.iconsClass">
-                <div class="icon-fail" @click="handleWrong">
+                <div class="icon-fail" @click="handleAnswer(word, 'fail')">
                     <IconFailSmall/>
                 </div>
-                <div class="icon-succes" @click="handleCorrect">
+                <div class="icon-succes" @click="handleAnswer(word, 'succes')">
                     <IconSuccesSmall/>
                 </div>
             </div>
 
             <div class="completed" v-show="classState.completedClass">Завершено</div>
         </div>
-        
     </div>
 </template>
 
@@ -195,6 +182,8 @@
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
+        text-align: center;
+        overflow-wrap: break-word;
     }
 
     .card-line {

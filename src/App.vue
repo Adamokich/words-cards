@@ -1,27 +1,42 @@
 <script setup>
-    import { ref } from 'vue';
+    import { computed, isRef, nextTick, onMounted, ref } from 'vue';
     import Button from './components/Button.vue';
     import Score from './components/Score.vue';
     import Card from './components/Card.vue';
 
-    const score = ref(0);
+    const API_ENDPOINT = 'http://localhost:8080/api/random-words';
 
-    const card = ref({
-        word: 'unadmitted',
-        translation: 'Не осуществимый',
-        state: 'closed',
-        status: 'pending'
+    let score = ref(0);
+    let cardsData = ref([]);
+
+    onMounted(() => {
+        getCards();
     })
+    
 
-    function flipWord() {
-        card.value.word = card.value.translation;
-        card.value.state = 'opened';
+    async function getCards() {
+        const res = await fetch(`${API_ENDPOINT}`);
+
+        cardsData.value = await res.json();
+
+        cardsData.value = cardsData.value.map(item => ({...item, state: 'closed', status: 'pending'}));
     }
 
-    function getAnswer(answer) {
-        card.value.status = answer;
+     const cards = computed(() => cardsData.value);
+    
+    function flipWord(word) {
+        const card = cardsData.value.find(item => item.word === word);
+        if (card) {
+            card.state = 'opened';
+            card.word = card.translation;
+        }
     }
 
+    function handleAnswer(word, answer) {
+        const card = cardsData.value.find(item => item.word === word);
+        if (card) card.status = answer;
+    }
+    
 </script>
 
 <template>
@@ -31,10 +46,18 @@
             <Score :score="score"/>
         </header>
         <Button/>
-        <Card
-        @flip="flipWord"
-        @answer="getAnswer"
-        v-bind="card"/>
+        <div class="cards">
+            <Card 
+            v-for="item in cards"
+            :key="item.word"
+            :word="item.word"
+            :translation="item.translation"
+            :state="item.state"
+            :status="item.status"
+            @flip="flipWord"
+            @answer="handleAnswer"
+            />
+        </div>
     </div>
 </template>
 
@@ -53,5 +76,11 @@
 
     .header-title {
         font-size: 16px;
+    }
+
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        row-gap: 20px;
     }
 </style>
