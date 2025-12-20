@@ -1,24 +1,25 @@
 <script setup>
+    import { ref } from 'vue';
     import Button from './components/Button.vue';
     import Score from './components/Score.vue';
     import Card from './components/Card.vue';
-    
-    let isFlipped = true;
-    let answerVariable = false;
-    let completed = true;
 
-    const eng = 'unadmitted';
-    const rus = 'Не осуществимый';
+    const score = ref(0);
 
-    const score = 50;
+    const card = ref({
+        word: 'unadmitted',
+        translation: 'Не осуществимый',
+        state: 'closed',
+        status: 'pending'
+    })
 
-    function handleFlip() {
-        isFlipped = !isFlipped;
+    function flipWord() {
+        card.value.word = card.value.translation;
+        card.value.state = 'opened';
     }
 
-    function handleAnswer(answer) {
-       answer ? answerVariable = true: answerVariable = false;
-       completed = true;
+    function getAnswer(answer) {
+        card.value.status = answer;
     }
 
 </script>
@@ -30,13 +31,10 @@
             <Score :score="score"/>
         </header>
         <Button/>
-        <Card 
-        @flip="handleFlip"
-        @answer="handleAnswer"
-        :answer="answerVariable"
-        :word="isFlipped ? rus : eng"
-        :isFlipped="isFlipped"
-        :completed="completed"/>
+        <Card
+        @flip="flipWord"
+        @answer="getAnswer"
+        v-bind="card"/>
     </div>
 </template>
 

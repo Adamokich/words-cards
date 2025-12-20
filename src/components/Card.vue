@@ -3,35 +3,45 @@
     import IconSuccesSmall from '../icons/IconSuccesSmall.vue';
     import IconFail from '../icons/IconFail.vue';
     import IconSucces from '../icons/IconSucces.vue';
-
-    const {word, icon, isFlipped, answer, completed} = defineProps({
-        word: String,
-        icon: null,
-        isFlipped: null,
-        answer: String,
-        completed: String
-    })
-
-    const {turnClass, iconsClass, answerOptionClass, completedClass} = {
-        turnClass: isFlipped ? 'card-turn none' : 'card-turn',
-        iconsClass: isFlipped && !completed ? 'answer-icons' : 'answer-icons none',
-        answerOptionClass: completed ? 'stateAnswer' : 'stateAnswer none',
-        completedClass: completed ? 'completed' : 'completed none'
-    }
+    import { computed } from 'vue';
 
     const emit = defineEmits(['flip', 'answer']);
+
+    const {word, translation, state, status} = defineProps({
+        word: String,
+        translation: String,
+        state: String,
+        status: String
+    })
+
+    const classState = computed(() => {
+        return {
+            turnClass: state === 'closed' ? 'card-turn' : 'card-turn none',
+            iconsClass: state === 'opened' && status === 'pending' ? 'answer-icons' : 'answer-icons none',
+            answerOptionClass: status === 'pending' && state === 'opened' ? 'stateAnswer none' : 'stateAnswer',
+            completedClass: status === 'pending' ? 'completed none' : 'completed'
+        }
+    })
+
+    const answerState = computed(() => {
+        return {
+            fail: status === 'fail' ? 'fail' : 'fail none',
+            succes: status === 'succes' ? 'succes' : 'succes none'
+        }
+    })
 
     function handleFlip() {
         emit('flip');
     }
 
     function handleCorrect() {
-        emit('answer', true);
+        emit('answer', 'succes')
     }
 
     function handleWrong() {
-        emit('answer', false);
+        emit('answer', 'fail')
     }
+
 </script>
 
 <template>
@@ -39,11 +49,11 @@
         <div class="card-line"></div>
         <div class="card-line"></div>
 
-        <div :class="answerOptionClass">
-            <div :class="`${answer ? 'fail none' : 'fail'}`">
+        <div :class="classState.answerOptionClass">
+            <div :class="answerState.fail">
                 <IconFail/>
             </div>
-            <div :class="`${answer ? 'succes' : 'succes none'}`">
+            <div :class="answerState.succes">
                 <IconSucces/>
             </div>
         </div>
@@ -52,9 +62,9 @@
             <div class="card-number">01</div>
             <div class="card-name">{{ word }}</div>
 
-            <div :class="turnClass" @click="handleFlip">Перевернуть</div>
+            <div :class="classState.turnClass" @click="handleFlip">Перевернуть</div>
 
-            <div :class="iconsClass">
+            <div :class="classState.iconsClass">
                 <div class="icon-fail" @click="handleWrong">
                     <IconFailSmall/>
                 </div>
@@ -63,7 +73,7 @@
                 </div>
             </div>
 
-            <div :class="completedClass">Завершено</div>
+            <div :class="classState.completedClass">Завершено</div>
         </div>
         
     </div>
