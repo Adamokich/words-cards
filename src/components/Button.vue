@@ -1,7 +1,11 @@
-<script setup></script>
+<script setup>
+    const emit = defineEmits(['game']);
+</script>
 
 <template>
-    <button class="button">Начать игру</button>
+    <button class="button" @click="() => emit('game')">
+        <slot/>
+    </button>
 </template>
 
 <style scoped>
